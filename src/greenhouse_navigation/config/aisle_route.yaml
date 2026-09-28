@@ -1,0 +1,48 @@
+# Waypoint route through the greenhouse's loop path, used by route_manager
+# (see greenhouse_bringup). Each waypoint is a Nav2 goal a few tens of cm
+# into an aisle, facing the corresponding table's dock_target; route_manager
+# hands off to greenhouse_vision's table_alignment_controller for the final
+# approach. marker_id here is just route metadata for the logged reading --
+# dock_target_detector never sees it (see its docstring for why).
+#
+# Frame: map. Generated for the 3-row loop layout in
+# greenhouse_world/worlds/greenhouse.sdf -- see that file's header comment
+# for the row/aisle geometry.
+
+waypoints:
+  - name: table_a0
+    marker_id: 0
+    pose: { x: -3.6, y: 2.1, yaw: 1.5708 }
+  - name: table_a1
+    marker_id: 1
+    pose: { x: -1.2, y: 2.1, yaw: 1.5708 }
+  - name: table_a2
+    marker_id: 2
+    pose: { x: 1.2, y: 2.1, yaw: 1.5708 }
+  - name: table_a3
+    marker_id: 3
+    pose: { x: 3.6, y: 2.1, yaw: 1.5708 }
+  - name: table_b0
+    marker_id: 4
+    pose: { x: -3.6, y: 0.9, yaw: -1.5708 }
+  - name: table_b1
+    marker_id: 5
+    pose: { x: -1.2, y: 0.9, yaw: -1.5708 }
+  - name: table_b2
+    marker_id: 6
+    pose: { x: 1.2, y: 0.9, yaw: -1.5708 }
+  - name: table_b3
+    marker_id: 7
+    pose: { x: 3.6, y: 0.9, yaw: -1.5708 }
+  - name: table_c0
+    marker_id: 8
+    pose: { x: -3.6, y: -2.1, yaw: -1.5708 }
+  - name: table_c1
+    marker_id: 9
+    pose: { x: -1.2, y: -2.1, yaw: -1.5708 }
+  - name: table_c2
+    marker_id: 10
+    pose: { x: 1.2, y: -2.1, yaw: -1.5708 }
+  - name: table_c3
+    marker_id: 11
+    pose: { x: 3.6, y: -2.1, yaw: -1.5708 }

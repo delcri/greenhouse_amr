@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- ===================== ros2_control (diff drive) ===================== -->
+  <ros2_control name="greenhouse_bot_system" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="right_wheel_joint">
+      <command_interface name="velocity"/>
+      <state_interface name="velocity"/>
+      <state_interface name="position"/>
+    </joint>
+    <joint name="camera_pan_joint">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find greenhouse_description)/config/diff_drive_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+  <!-- ===================== RGB-D camera (dock docking + VSLAM) =====================
+       One sensor doing double duty, like the RealSense D455 on the
+       forklift: greenhouse_vision's dock_target_detector uses the
+       color+depth+camera_info stream, greenhouse_vslam's RTAB-Map
+       pipeline uses the same color+depth+camera_info for visual
+       odometry, mapping and localization. No lidar on this robot, so
+       obstacle avoidance and SLAM are both camera-only, same sensing
+       approach as the forklift project. Publishes under the `camera`
+       topic: camera/image, camera/image_raw, camera/depth_image,
+       camera/points, camera/camera_info (confirmed against a running
+       Gazebo Fortress instance, via `ign topic -l`).
+
+       Resolution/rate (640x480 @ 15Hz), horizontal_fov (1.5184 rad, the
+       D455's real spec), clip range and the gaussian noise model are
+       copied from the forklift project's sensors.urdf.xacro RealSense
+       definition. So is the frame_id fix: the sensor is mounted on
+       camera_pan_link (the physical, forward-facing mount, since Gazebo
+       cameras render along the link's own +X, so mounting on the
+       REP-103-rotated camera_optical_link directly would point the
+       render sideways) with <ignition_frame_id> set to that same
+       physical link, and <optical_frame_id> tells gz-sim to stamp the
+       actual image/camera_info messages with camera_optical_link
+       instead, exactly the split forklift's sensors.urdf.xacro uses.
+       Verified in isolation: without <optical_frame_id>, gz-sim stamps
+       messages with the sensor's scoped entity name instead (not a real
+       TF frame at all), breaking every downstream TF lookup. -->
+  <gazebo reference="camera_pan_link">
+    <sensor name="realsense_d455" type="rgbd_camera">
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <update_rate>15</update_rate>
+      <topic>camera</topic>
+      <ignition_frame_id>camera_pan_link</ignition_frame_id>
+      <camera name="camera">
+        <horizontal_fov>1.5184</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.1</near>
+          <far>30.0</far>
+        </clip>
+        <depth_camera>
+          <clip>
+            <near>0.1</near>
+            <far>30.0</far>
+          </clip>
+        </depth_camera>
+        <optical_frame_id>camera_optical_link</optical_frame_id>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.005</stddev>
+        </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+
+  <!-- ===================== material passthrough (SDF needs its own tags) ===================== -->
+  <gazebo reference="base_link"><material>Gazebo/Green</material></gazebo>
+  <gazebo reference="left_wheel_link"><material>Gazebo/Black</material></gazebo>
+  <gazebo reference="right_wheel_link"><material>Gazebo/Black</material></gazebo>
+  <gazebo reference="caster_wheel_link">
+    <material>Gazebo/Black</material>
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+  </gazebo>
+  <gazebo reference="mast_link"><material>Gazebo/Grey</material></gazebo>
+  <gazebo reference="camera_pan_link"><material>Gazebo/DarkGrey</material></gazebo>
+
+</robot>

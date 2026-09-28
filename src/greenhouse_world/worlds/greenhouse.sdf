@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<sdf version="1.9">
+  <world name="greenhouse">
+
+    <physics name="1ms" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-contact-system" name="gz::sim::systems::Contact"/>
+
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.85 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.4 0.2 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <!-- Flat color, not an image texture: gz-sim's PBR albedo_map
+             renders solid black in this Gazebo Fortress build regardless
+             of geometry type, PBR workflow (metal/specular), or image
+             color mode, confirmed across several isolated test worlds.
+             A flat color is guaranteed to actually render. -->
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal><size>16 12</size></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>16 12</size></plane></geometry>
+          <material>
+            <ambient>0.6 0.6 0.62 1</ambient>
+            <diffuse>0.6 0.6 0.62 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================================================================
+         Full greenhouse building: 3 rows of grow tables (a/b/c, 4 tables
+         each) flanking two internal aisles, surrounded on all four sides
+         by a perimeter walkway. The internal aisles connect to the
+         perimeter at both ends, so the whole thing forms one continuous
+         navigable loop, not just an out-and-back corridor, giving RTAB-Map
+         an actual loop-closure opportunity when the robot drives all the
+         way around.
+
+         Row a (north, y=3.0)  -> faces aisle 1 (y=1.5) from the north side
+         Row b (middle, y=0.0) -> faces aisle 1 (y=1.5) from the south side
+         Row c (south, y=-3.0) -> faces aisle 2 (y=-1.5) from the south side
+         ================================================================== -->
+
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_a0</name>
+      <pose>-3.6 3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_a0</name>
+      <pose>-3.6 2.64 0.95 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_a1</name>
+      <pose>-1.2 3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_a1</name>
+      <pose>-1.2 2.64 0.95 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_a2</name>
+      <pose>1.2 3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_a2</name>
+      <pose>1.2 2.64 0.95 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_a3</name>
+      <pose>3.6 3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_a3</name>
+      <pose>3.6 2.64 0.95 0 0 -1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_b0</name>
+      <pose>-3.6 0.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_b0</name>
+      <pose>-3.6 0.36 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_b1</name>
+      <pose>-1.2 0.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_b1</name>
+      <pose>-1.2 0.36 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_b2</name>
+      <pose>1.2 0.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_b2</name>
+      <pose>1.2 0.36 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_b3</name>
+      <pose>3.6 0.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_b3</name>
+      <pose>3.6 0.36 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_c0</name>
+      <pose>-3.6 -3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_c0</name>
+      <pose>-3.6 -2.64 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_c1</name>
+      <pose>-1.2 -3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_c1</name>
+      <pose>-1.2 -2.64 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_c2</name>
+      <pose>1.2 -3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_c2</name>
+      <pose>1.2 -2.64 0.95 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://grow_table</uri>
+      <name>table_c3</name>
+      <pose>3.6 -3.0 0.0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://dock_target</uri>
+      <name>dock_target_c3</name>
+      <pose>3.6 -2.64 0.95 0 0 1.5708</pose>
+    </include>
+
+    <!-- Perimeter walls (modular 2m panels) -->
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_0</name>
+      <pose>-5.000 -5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_1</name>
+      <pose>-3.000 -5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_2</name>
+      <pose>-1.000 -5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_3</name>
+      <pose>1.000 -5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_4</name>
+      <pose>3.000 -5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_5</name>
+      <pose>5.000 -5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_6</name>
+      <pose>-5.000 5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_7</name>
+      <pose>-3.000 5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_8</name>
+      <pose>-1.000 5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_9</name>
+      <pose>1.000 5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_10</name>
+      <pose>3.000 5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_11</name>
+      <pose>5.000 5.000 0 0 0 0.0000</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_12</name>
+      <pose>-6.000 -4.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_13</name>
+      <pose>-6.000 -2.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_14</name>
+      <pose>-6.000 0.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_15</name>
+      <pose>-6.000 2.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_16</name>
+      <pose>-6.000 4.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_17</name>
+      <pose>6.000 -4.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_18</name>
+      <pose>6.000 -2.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_19</name>
+      <pose>6.000 0.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_20</name>
+      <pose>6.000 2.000 0 0 0 1.5708</pose>
+    </include>
+    <include>
+      <uri>model://wall_segment</uri>
+      <name>wall_21</name>
+      <pose>6.000 4.000 0 0 0 1.5708</pose>
+    </include>
+
+    <!-- Support columns at wall joints -->
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_0</name>
+      <pose>-6.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_1</name>
+      <pose>-4.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_2</name>
+      <pose>-2.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_3</name>
+      <pose>0.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_4</name>
+      <pose>2.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_5</name>
+      <pose>4.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_6</name>
+      <pose>6.000 -4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_7</name>
+      <pose>-6.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_8</name>
+      <pose>-4.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_9</name>
+      <pose>-2.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_10</name>
+      <pose>0.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_11</name>
+      <pose>2.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_12</name>
+      <pose>4.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_13</name>
+      <pose>6.000 4.880 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_14</name>
+      <pose>-5.880 -5.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_15</name>
+      <pose>-5.880 -3.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_16</name>
+      <pose>-5.880 -1.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_17</name>
+      <pose>-5.880 1.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_18</name>
+      <pose>-5.880 3.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_19</name>
+      <pose>-5.880 5.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_20</name>
+      <pose>5.880 -5.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_21</name>
+      <pose>5.880 -3.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_22</name>
+      <pose>5.880 -1.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_23</name>
+      <pose>5.880 1.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_24</name>
+      <pose>5.880 3.000 0 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://support_column</uri>
+      <name>column_25</name>
+      <pose>5.880 5.000 0 0 0 0</pose>
+    </include>
+
+  </world>
+</sdf>

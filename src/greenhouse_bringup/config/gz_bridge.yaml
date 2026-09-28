@@ -1,0 +1,36 @@
+# Topic bridge between Gazebo Transport and ROS 2, used by ros_gz_bridge (parameter_bridge).
+- ros_topic_name: "clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  direction: GZ_TO_ROS
+
+# RGB-D camera (rgbd_camera sensor on camera_optical_link). Types verified
+# against a running Gazebo Fortress instance (`ign topic -i -t <topic>`).
+# NOTE: the gz-side color topic is "/camera/image", not "/camera/image_raw"
+# -- `ign topic -l` on a live sim only ever lists "/camera/image"; bridging
+# from "/camera/image_raw" silently relays nothing (no such gz publisher).
+# Kept the ROS-side name as camera/image_raw for the usual ROS convention.
+- ros_topic_name: "camera/image_raw"
+  gz_topic_name: "/camera/image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "camera/depth_image"
+  gz_topic_name: "/camera/depth_image"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "camera/points"
+  gz_topic_name: "/camera/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "camera/camera_info"
+  gz_topic_name: "/camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  direction: GZ_TO_ROS

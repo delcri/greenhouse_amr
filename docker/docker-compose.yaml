@@ -1,0 +1,34 @@
+services:
+  greenhouse_sim:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: greenhouse_amr:humble
+    container_name: greenhouse_amr_sim
+    network_mode: host
+    ipc: host
+    # `sleep infinity` as PID 1 doesn't reap zombie children (that's
+    # normally init's job) -- every ros2/gazebo process launched and
+    # killed across a long dev session piles up as <defunct> entries in
+    # `ps`/`htop`. `init: true` runs Docker's built-in tini as real PID 1
+    # instead, which does reap them.
+    init: true
+    environment:
+      - DISPLAY=${DISPLAY}
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE:-0}
+    devices:
+      # GPU passthrough for Gazebo/RViz (Mesa/iris) -- without this the
+      # container has no /dev/dri and falls back to a broken software
+      # rendering path. Comment out if your host has no /dev/dri at all
+      # (then set LIBGL_ALWAYS_SOFTWARE=1 in the environment instead).
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${XAUTHORITY:-/dev/null}:/root/.Xauthority:ro
+      # dev mount: edit on the host, re-run `colcon build` inside the
+      # container to pick up changes without rebuilding the image.
+      - ../src:/workspace/src
+    command: ["sleep", "infinity"]

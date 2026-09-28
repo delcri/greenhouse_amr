@@ -1,0 +1,22 @@
+# ROS2 / colcon build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+.venv_tools/
+
+# Editors / OS
+.vscode/
+*.swp
+.DS_Store
+
+# Gazebo
+*.log
+*.gz.log
+
+# Stray debug frames saved at the repo root while testing (docs/media/
+# screenshots and GIFs are still tracked normally)
+/*.png
